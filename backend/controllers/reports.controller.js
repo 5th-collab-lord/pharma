@@ -186,6 +186,22 @@ export const getAdminDashboardStats = async (req, res) => {
             status: "completed",
           },
         },
+        { $unwind: "$items" },
+        {
+          $lookup: {
+            from: "admin_medicines",
+            localField: "items.medicineId",
+            foreignField: "_id",
+            as: "medicine",
+          },
+        },
+        { $match: { medicine: { $ne: [] } } },
+        {
+          $group: {
+            _id: "$_id",
+            total: { $first: "$total" },
+          },
+        },
         {
           $group: {
             _id: null,
@@ -259,6 +275,22 @@ export const getShopDashboardStats = async (req, res) => {
               shopId: new mongoose.Types.ObjectId(shopId),
               createdAt: { $gte: today },
               status: "completed",
+            },
+          },
+          { $unwind: "$items" },
+          {
+            $lookup: {
+              from: "admin_medicines",
+              localField: "items.medicineId",
+              foreignField: "_id",
+              as: "medicine",
+            },
+          },
+          { $match: { medicine: { $ne: [] } } },
+          {
+            $group: {
+              _id: "$_id",
+              total: { $first: "$total" },
             },
           },
           {
